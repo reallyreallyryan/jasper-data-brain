@@ -1,7 +1,7 @@
 """
-Desert Spine & Sports - Ranking Intelligence Engine
+Healthcare SEO Intelligence Engine
 Specialized for SEMrush Organic Research exports
-Analyzes 4,912+ keywords to find ranking opportunities and traffic growth potential
+Analyzes keywords to find ranking opportunities and traffic growth potential
 """
 
 import pandas as pd
@@ -13,9 +13,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 import uvicorn
+import io
 
 
 # Specialized Data Models for Ranking Intelligence
@@ -70,7 +71,7 @@ class RankingIntelligence(BaseModel):
     monthly_opportunity: Dict[str, Any]
 
 
-class DesertSpineRankingIntelligence:
+class HealthcareRankingIntelligence:
     """Specialized ranking intelligence for healthcare/medical websites"""
     
     def __init__(self):
@@ -365,18 +366,18 @@ class DesertSpineRankingIntelligence:
 
 # FastAPI App
 app = FastAPI(
-    title="Desert Spine & Sports - Ranking Intelligence Engine",
+    title="Healthcare SEO Intelligence Engine",
     description="Specialized SEO ranking analysis for healthcare websites using SEMrush Organic Research exports",
-    version="1.0.0"
+    version="2.0.0"
 )
 
-intelligence_engine = DesertSpineRankingIntelligence()
+intelligence_engine = HealthcareRankingIntelligence()
 
 
 @app.get("/")
 async def root():
     return {
-        "message": "🏥 Desert Spine & Sports Ranking Intelligence Engine",
+        "message": "🏥 Healthcare SEO Intelligence Engine",
         "status": "ready",
         "optimized_for": "SEMrush Organic Research Exports",
         "capabilities": [
@@ -393,70 +394,398 @@ async def root():
 
 @app.get("/upload-form", response_class=HTMLResponse)
 async def upload_form():
-    """Upload form for SEMrush Organic Research exports"""
+    """Enhanced upload form for Healthcare SEO Ranking Intelligence"""
     return """
-    <html>
+    <!DOCTYPE html>
+    <html lang="en">
         <head>
-            <title>🏥 Desert Spine & Sports - Ranking Intelligence</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>🏥 Healthcare SEO - Ranking Intelligence Engine</title>
             <style>
-                body { font-family: Arial, sans-serif; max-width: 900px; margin: 50px auto; padding: 20px; }
-                .upload-area { border: 2px dashed #007acc; padding: 40px; text-align: center; margin: 20px 0; background: #f8f9fa; }
-                button { background: #007acc; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-                button:hover { background: #005999; }
-                .stats { display: flex; justify-content: space-around; margin: 20px 0; }
-                .stat-box { background: #e9ecef; padding: 15px; border-radius: 4px; text-align: center; }
-                .healthcare { color: #dc3545; font-weight: bold; }
+                :root {
+                    --primary-blue: #2563eb;
+                    --primary-blue-dark: #1d4ed8;
+                    --healthcare-red: #dc2626;
+                    --success-green: #16a34a;
+                    --light-gray: #f8fafc;
+                    --border-gray: #e2e8f0;
+                    --text-gray: #475569;
+                }
+                
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    line-height: 1.6;
+                    color: var(--text-gray);
+                    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                    min-height: 100vh;
+                }
+                
+                .container {
+                    max-width: 1000px;
+                    margin: 0 auto;
+                    padding: 2rem;
+                }
+                
+                .header {
+                    text-align: center;
+                    margin-bottom: 3rem;
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }
+                
+                .header h1 {
+                    color: var(--primary-blue);
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                }
+                
+                .header .subtitle {
+                    color: var(--healthcare-red);
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                }
+                
+                .header .description {
+                    color: var(--text-gray);
+                    font-size: 1rem;
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+                
+                .upload-section {
+                    background: white;
+                    border-radius: 16px;
+                    padding: 3rem;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    border: 2px dashed var(--border-gray);
+                    transition: all 0.3s ease;
+                }
+                
+                .upload-section:hover {
+                    border-color: var(--primary-blue);
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+                }
+                
+                .upload-section h2 {
+                    color: var(--primary-blue);
+                    font-size: 1.8rem;
+                    margin-bottom: 1rem;
+                    text-align: center;
+                }
+                
+                .file-input-container {
+                    position: relative;
+                    margin: 2rem 0;
+                }
+                
+                .file-input {
+                    width: 100%;
+                    padding: 1rem;
+                    border: 2px solid var(--border-gray);
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    transition: border-color 0.3s ease;
+                }
+                
+                .file-input:focus {
+                    outline: none;
+                    border-color: var(--primary-blue);
+                }
+                
+                .upload-instructions {
+                    background: var(--light-gray);
+                    padding: 1.5rem;
+                    border-radius: 8px;
+                    margin: 1.5rem 0;
+                    border-left: 4px solid var(--primary-blue);
+                }
+                
+                .upload-instructions strong {
+                    color: var(--primary-blue);
+                }
+                
+                .analyze-btn {
+                    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+                    color: white;
+                    padding: 1rem 2rem;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: block;
+                    margin: 2rem auto 0;
+                    min-width: 200px;
+                }
+                
+                .analyze-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px -5px rgba(37, 99, 235, 0.4);
+                }
+                
+                .analyze-btn:active {
+                    transform: translateY(0);
+                }
+                
+                .features-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 1.5rem;
+                    margin-bottom: 2rem;
+                }
+                
+                .feature-card {
+                    background: white;
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                    transition: transform 0.3s ease;
+                }
+                
+                .feature-card:hover {
+                    transform: translateY(-4px);
+                }
+                
+                .feature-card .icon {
+                    font-size: 2rem;
+                    margin-bottom: 1rem;
+                }
+                
+                .feature-card h3 {
+                    color: var(--primary-blue);
+                    font-size: 1.2rem;
+                    margin-bottom: 0.5rem;
+                }
+                
+                .feature-card p {
+                    color: var(--text-gray);
+                    font-size: 0.9rem;
+                }
+                
+                .capabilities {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+                
+                .capabilities h3 {
+                    color: var(--healthcare-red);
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                    text-align: center;
+                }
+                
+                .capabilities-list {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 1rem;
+                    list-style: none;
+                }
+                
+                .capabilities-list li {
+                    padding: 0.75rem;
+                    background: var(--light-gray);
+                    border-radius: 6px;
+                    border-left: 3px solid var(--success-green);
+                }
+                
+                .capabilities-list strong {
+                    color: var(--primary-blue);
+                }
+                
+                .loading {
+                    display: none;
+                    text-align: center;
+                    margin-top: 1rem;
+                }
+                
+                .loading .spinner {
+                    border: 3px solid #f3f3f3;
+                    border-top: 3px solid var(--primary-blue);
+                    border-radius: 50%;
+                    width: 30px;
+                    height: 30px;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 1rem;
+                }
+                
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                
+                @media (max-width: 768px) {
+                    .container {
+                        padding: 1rem;
+                    }
+                    
+                    .header h1 {
+                        font-size: 2rem;
+                    }
+                    
+                    .upload-section {
+                        padding: 2rem;
+                    }
+                }
             </style>
         </head>
         <body>
-            <h1>🏥 Desert Spine & Sports - Ranking Intelligence Engine</h1>
-            <p class="healthcare">Specialized for healthcare SEO & spine/sports medicine practices</p>
-            
-            <form action="/analyze-rankings/" method="post" enctype="multipart/form-data">
-                <div class="upload-area">
-                    <h3>📊 Upload SEMrush Organic Research Export</h3>
-                    <input type="file" name="file" accept=".csv" required>
-                    <br><br>
-                    <p>Expected format: <strong>SEMrush → Organic Research → Export Organic Keywords</strong></p>
-                    <button type="submit">🚀 Analyze Rankings</button>
+            <div class="container">
+                <div class="header">
+                    <h1>🏥 Healthcare SEO Intelligence</h1>
+                    <p class="subtitle">Advanced Ranking Analysis for Medical Practices</p>
+                    <p class="description">
+                        Transform your SEMrush data into actionable SEO strategies. 
+                        Identify quick wins, content gaps, and revenue opportunities specifically for healthcare websites.
+                    </p>
                 </div>
-            </form>
-            
-            <div class="stats">
-                <div class="stat-box">
-                    <h4>🎯 Quick Wins</h4>
-                    <p>Keywords in positions 4-10 that can reach top 3</p>
+                
+                <form id="analysisForm" action="/analyze-rankings/" method="post" enctype="multipart/form-data">
+                    <div class="upload-section">
+                        <h2>📊 Upload Your SEMrush Export</h2>
+                        
+                        <div class="file-input-container">
+                            <input type="file" name="file" accept=".csv" required class="file-input" id="csvFile">
+                        </div>
+                        
+                        <div class="upload-instructions">
+                            <p><strong>Expected Format:</strong> SEMrush → Organic Research → Export Organic Keywords</p>
+                            <p>💡 <strong>Tip:</strong> Include both current and previous position data for trend analysis</p>
+                        </div>
+                        
+                        <button type="submit" class="analyze-btn" id="analyzeBtn">
+                            🚀 Analyze Rankings
+                        </button>
+                        
+                        <div class="loading" id="loadingIndicator">
+                            <div class="spinner"></div>
+                            <p>Analyzing your rankings... This may take a few moments.</p>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="icon">🎯</div>
+                        <h3>Quick Wins</h3>
+                        <p>Keywords in positions 4-10 that can reach top 3 with focused optimization</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📝</div>
+                        <h3>Content Gaps</h3>
+                        <p>Positions 11-20 needing comprehensive content development</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">💰</div>
+                        <h3>Revenue Opportunities</h3>
+                        <p>High CPC keywords with significant traffic and revenue potential</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">⚠️</div>
+                        <h3>Declining Keywords</h3>
+                        <p>Keywords losing positions that require immediate attention</p>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <h4>📝 Content Gaps</h4>
-                    <p>Positions 11-20 needing content optimization</p>
-                </div>
-                <div class="stat-box">
-                    <h4>💰 High Value</h4>
-                    <p>High CPC keywords with revenue potential</p>
-                </div>
-                <div class="stat-box">
-                    <h4>⚠️ Declining</h4>
-                    <p>Keywords losing positions that need attention</p>
+                
+                <div class="capabilities">
+                    <h3>🏥 Healthcare SEO Specializations</h3>
+                    <ul class="capabilities-list">
+                        <li><strong>Medical Keyword Analysis</strong> - Specialized for healthcare terminology and patient search behavior</li>
+                        <li><strong>Patient Intent Classification</strong> - Distinguish between informational and appointment-seeking queries</li>
+                        <li><strong>Local SEO Opportunities</strong> - "Near me" searches and location-based optimization</li>
+                        <li><strong>Treatment Page Optimization</strong> - Service-specific ranking opportunities and content gaps</li>
+                        <li><strong>Competition Analysis</strong> - Compare performance against other medical practices</li>
+                        <li><strong>SERP Feature Targeting</strong> - Featured snippets and "People Also Ask" opportunities</li>
+                    </ul>
                 </div>
             </div>
             
-            <h3>🏥 Healthcare SEO Features:</h3>
-            <ul>
-                <li><strong>Medical Keyword Analysis</strong> - Spine, sports medicine, pain treatment terms</li>
-                <li><strong>Patient Intent Classification</strong> - Information vs appointment seeking</li>
-                <li><strong>Local SEO Opportunities</strong> - "Near me" and location-based terms</li>
-                <li><strong>Treatment Page Optimization</strong> - Service-specific ranking opportunities</li>
-                <li><strong>Competition Analysis</strong> - vs other medical practices</li>
-            </ul>
+            <script>
+                document.getElementById('analysisForm').addEventListener('submit', function(e) {
+                    const analyzeBtn = document.getElementById('analyzeBtn');
+                    const loadingIndicator = document.getElementById('loadingIndicator');
+                    
+                    // Show loading state
+                    analyzeBtn.style.display = 'none';
+                    loadingIndicator.style.display = 'block';
+                    
+                    // Note: Form will submit normally, loading state is just for UX
+                });
+                
+                // File input enhancement
+                document.getElementById('csvFile').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file && !file.name.toLowerCase().endsWith('.csv')) {
+                        alert('Please select a CSV file from your SEMrush export.');
+                        e.target.value = '';
+                    }
+                });
+            </script>
         </body>
     </html>
     """
 
 
-@app.post("/analyze-rankings/", response_model=RankingIntelligence)
+@app.get("/download-csv/{domain}")
+async def download_analysis_csv(domain: str):
+    """Download CSV export of analysis results"""
+    # For now, return a simple message - we'll implement this with session storage later
+    return {"message": "CSV download endpoint ready"}
+
+
+def generate_csv_content(analysis: RankingIntelligence) -> str:
+    """Generate CSV content for download"""
+    csv_content = io.StringIO()
+    
+    # Write header
+    csv_content.write("Category,Keyword,Current_Position,Previous_Position,Position_Change,Search_Volume,CPC,Traffic,Traffic_Cost,Opportunity_Score,URL\n")
+    
+    # Helper function to write keywords to CSV
+    def write_keywords_to_csv(keywords, category_name):
+        for kw in keywords:
+            position_change = kw.position_change if kw.position_change else ""
+            previous_pos = kw.previous_position if kw.previous_position else ""
+            
+            csv_content.write(f'"{category_name}","{kw.keyword}",{kw.current_position},"{previous_pos}","{position_change}",{kw.search_volume},{kw.cpc},{kw.traffic},{kw.traffic_cost},{kw.opportunity_score},"{kw.url}"\n')
+    
+    # Write all categories
+    write_keywords_to_csv(analysis.quick_wins, "Quick Wins")
+    write_keywords_to_csv(analysis.content_gaps, "Content Gaps")
+    write_keywords_to_csv(analysis.high_value_targets, "High Value Targets")
+    write_keywords_to_csv(analysis.declining_keywords, "Declining Keywords")
+    write_keywords_to_csv(analysis.traffic_winners, "Traffic Winners")
+    write_keywords_to_csv(analysis.serp_feature_opportunities, "SERP Feature Opportunities")
+    write_keywords_to_csv(analysis.long_tail_opportunities, "Long Tail Opportunities")
+    
+    return csv_content.getvalue()
+
+
+@app.get("/analyze-rankings/")
+async def redirect_to_upload():
+    """Redirect GET requests to upload form (handles refresh issue)"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/upload-form", status_code=302)
+
+
+@app.post("/analyze-rankings/")
 async def analyze_uploaded_rankings(file: UploadFile = File(...)):
-    """Upload and analyze SEMrush Organic Research export"""
+    """Upload and analyze SEMrush Organic Research export - Returns beautiful HTML results"""
     
     # Validate file type
     if not file.filename.endswith('.csv'):
@@ -476,7 +805,8 @@ async def analyze_uploaded_rankings(file: UploadFile = File(...)):
         # Analyze the rankings
         result = await intelligence_engine.analyze_ranking_data(temp_path)
         
-        return result
+        # Return beautiful HTML results page with CSV download capability
+        return HTMLResponse(content=generate_results_html(result))
         
     finally:
         # Clean up temp file
@@ -484,12 +814,568 @@ async def analyze_uploaded_rankings(file: UploadFile = File(...)):
             Path(temp_path).unlink()
 
 
+@app.get("/analyze-rankings/json/{filename}")
+async def get_analysis_json(filename: str):
+    """Download JSON version of analysis results"""
+    # This will be implemented later for JSON downloads
+    return {"message": "JSON download coming soon!"}
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "engine_status": "analyzing rankings"}
 
 
+def generate_results_html(analysis: RankingIntelligence) -> str:
+    """Generate beautiful HTML results page"""
+    
+    # Helper function to format keywords table
+    def format_keywords_table(keywords, limit=10):
+        if not keywords:
+            return "<p class='no-data'>No keywords found in this category</p>"
+        
+        table_html = """
+        <div class="keywords-table-container">
+            <table class="keywords-table">
+                <thead>
+                    <tr>
+                        <th>Keyword</th>
+                        <th>Position</th>
+                        <th>Change</th>
+                        <th>Volume</th>
+                        <th>CPC</th>
+                        <th>Opportunity</th>
+                    </tr>
+                </thead>
+                <tbody>
+        """
+        
+        for kw in keywords[:limit]:
+            change_icon = ""
+            change_class = "neutral"
+            if kw.position_change:
+                if kw.position_change > 0:
+                    change_icon = f"🟢 +{kw.position_change}"
+                    change_class = "positive"
+                elif kw.position_change < 0:
+                    change_icon = f"🔴 {kw.position_change}"
+                    change_class = "negative"
+            
+            table_html += f"""
+                <tr>
+                    <td class="keyword-cell">
+                        <strong>{kw.keyword}</strong>
+                        <small>{kw.url}</small>
+                    </td>
+                    <td class="position-cell">#{kw.current_position}</td>
+                    <td class="change-cell {change_class}">{change_icon or '-'}</td>
+                    <td class="volume-cell">{kw.search_volume:,}</td>
+                    <td class="cpc-cell">${kw.cpc:.2f}</td>
+                    <td class="opportunity-cell">
+                        <span class="opportunity-score">{kw.opportunity_score:.1f}/10</span>
+                    </td>
+                </tr>
+            """
+        
+        table_html += """
+                </tbody>
+            </table>
+        </div>
+        """
+        
+        if len(keywords) > limit:
+            table_html += f"<p class='more-results'>+ {len(keywords) - limit} more keywords...</p>"
+        
+        return table_html
+    
+    # Helper function for insights list
+    def format_insights_list(insights):
+        if not insights:
+            return "<p>No insights available</p>"
+        
+        html = "<ul class='insights-list'>"
+        for insight in insights:
+            html += f"<li>{insight}</li>"
+        html += "</ul>"
+        return html
+    
+    # Helper function for action items
+    def format_action_items(actions):
+        if not actions:
+            return "<p>No action items available</p>"
+        
+        html = "<ul class='action-items-list'>"
+        for action in actions:
+            html += f"<li>{action}</li>"
+        html += "</ul>"
+        return html
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>🏥 Healthcare SEO Analysis Results - {analysis.site_domain}</title>
+            <style>
+                :root {{
+                    --primary-blue: #2563eb;
+                    --primary-blue-dark: #1d4ed8;
+                    --healthcare-red: #dc2626;
+                    --success-green: #16a34a;
+                    --warning-orange: #f59e0b;
+                    --light-gray: #f8fafc;
+                    --border-gray: #e2e8f0;
+                    --text-gray: #475569;
+                    --text-dark: #1e293b;
+                }}
+                
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }}
+                
+                body {{
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    line-height: 1.6;
+                    color: var(--text-gray);
+                    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                    min-height: 100vh;
+                }}
+                
+                .container {{
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 2rem;
+                }}
+                
+                .header {{
+                    text-align: center;
+                    margin-bottom: 2rem;
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }}
+                
+                .header h1 {{
+                    color: var(--primary-blue);
+                    font-size: 2.2rem;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                }}
+                
+                .header .domain {{
+                    color: var(--healthcare-red);
+                    font-size: 1.3rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                }}
+                
+                .overview-stats {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 1.5rem;
+                    margin-bottom: 3rem;
+                }}
+                
+                .stat-card {{
+                    background: white;
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                    transition: transform 0.3s ease;
+                }}
+                
+                .stat-card:hover {{
+                    transform: translateY(-4px);
+                }}
+                
+                .stat-card .number {{
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: var(--primary-blue);
+                    display: block;
+                }}
+                
+                .stat-card .label {{
+                    color: var(--text-gray);
+                    font-size: 0.9rem;
+                    margin-top: 0.5rem;
+                }}
+                
+                .opportunities-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+                    gap: 2rem;
+                    margin-bottom: 3rem;
+                }}
+                
+                .opportunity-section {{
+                    background: white;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    overflow: hidden;
+                }}
+                
+                .opportunity-header {{
+                    padding: 1.5rem;
+                    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+                    color: white;
+                }}
+                
+                .opportunity-header h3 {{
+                    font-size: 1.3rem;
+                    margin-bottom: 0.5rem;
+                }}
+                
+                .opportunity-header .count {{
+                    font-size: 2rem;
+                    font-weight: 700;
+                }}
+                
+                .opportunity-content {{
+                    padding: 1.5rem;
+                }}
+                
+                .keywords-table-container {{
+                    overflow-x: auto;
+                }}
+                
+                .keywords-table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 1rem 0;
+                }}
+                
+                .keywords-table th {{
+                    background: var(--light-gray);
+                    padding: 0.75rem;
+                    text-align: left;
+                    font-weight: 600;
+                    color: var(--text-dark);
+                    border-bottom: 2px solid var(--border-gray);
+                }}
+                
+                .keywords-table td {{
+                    padding: 0.75rem;
+                    border-bottom: 1px solid var(--border-gray);
+                }}
+                
+                .keyword-cell {{
+                    max-width: 200px;
+                }}
+                
+                .keyword-cell strong {{
+                    display: block;
+                    color: var(--text-dark);
+                    margin-bottom: 0.25rem;
+                }}
+                
+                .keyword-cell small {{
+                    color: var(--text-gray);
+                    font-size: 0.8rem;
+                    opacity: 0.7;
+                }}
+                
+                .position-cell {{
+                    font-weight: 600;
+                    color: var(--primary-blue);
+                }}
+                
+                .change-cell.positive {{
+                    color: var(--success-green);
+                    font-weight: 600;
+                }}
+                
+                .change-cell.negative {{
+                    color: var(--healthcare-red);
+                    font-weight: 600;
+                }}
+                
+                .opportunity-score {{
+                    background: linear-gradient(135deg, var(--success-green) 0%, var(--warning-orange) 100%);
+                    color: white;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 4px;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                }}
+                
+                .insights-section {{
+                    background: white;
+                    border-radius: 16px;
+                    padding: 2rem;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }}
+                
+                .insights-section h3 {{
+                    color: var(--healthcare-red);
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                }}
+                
+                .insights-list {{
+                    list-style: none;
+                    margin: 1rem 0;
+                }}
+                
+                .insights-list li {{
+                    padding: 0.75rem;
+                    margin: 0.5rem 0;
+                    background: var(--light-gray);
+                    border-radius: 8px;
+                    border-left: 4px solid var(--primary-blue);
+                }}
+                
+                .action-items-section {{
+                    background: linear-gradient(135deg, var(--healthcare-red) 0%, #b91c1c 100%);
+                    color: white;
+                    border-radius: 16px;
+                    padding: 2rem;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }}
+                
+                .action-items-section h3 {{
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                }}
+                
+                .action-items-list {{
+                    list-style: none;
+                    margin: 1rem 0;
+                }}
+                
+                .action-items-list li {{
+                    padding: 0.75rem;
+                    margin: 0.5rem 0;
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 8px;
+                    border-left: 4px solid white;
+                }}
+                
+                .download-section {{
+                    text-align: center;
+                    margin: 3rem 0;
+                }}
+                
+                .download-btn {{
+                    background: linear-gradient(135deg, var(--success-green) 0%, #15803d 100%);
+                    color: white;
+                    padding: 1rem 2rem;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    text-decoration: none;
+                    display: inline-block;
+                    transition: all 0.3s ease;
+                    margin: 0 1rem;
+                }}
+                
+                .download-btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px -5px rgba(22, 163, 74, 0.4);
+                }}
+                
+                .back-btn {{
+                    background: linear-gradient(135deg, var(--text-gray) 0%, #334155 100%);
+                    color: white;
+                    padding: 1rem 2rem;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    text-decoration: none;
+                    display: inline-block;
+                    transition: all 0.3s ease;
+                    margin: 0 1rem;
+                }}
+                
+                .back-btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px -5px rgba(71, 85, 105, 0.4);
+                }}
+                
+                .no-data {{
+                    text-align: center;
+                    color: var(--text-gray);
+                    font-style: italic;
+                    padding: 2rem;
+                }}
+                
+                .more-results {{
+                    text-align: center;
+                    color: var(--text-gray);
+                    font-style: italic;
+                    margin-top: 1rem;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .container {{
+                        padding: 1rem;
+                    }}
+                    
+                    .opportunities-grid {{
+                        grid-template-columns: 1fr;
+                    }}
+                    
+                    .keywords-table {{
+                        font-size: 0.8rem;
+                    }}
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🏥 Healthcare SEO Analysis Results</h1>
+                    <p class="domain">{analysis.site_domain}</p>
+                    <p>Complete ranking intelligence analysis with actionable opportunities</p>
+                </div>
+                
+                <div class="overview-stats">
+                    <div class="stat-card">
+                        <span class="number">{analysis.total_keywords:,}</span>
+                        <div class="label">Total Keywords</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">{analysis.avg_position:.1f}</span>
+                        <div class="label">Average Position</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">{analysis.total_traffic:,}</span>
+                        <div class="label">Monthly Traffic</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">${analysis.total_traffic_value:,.0f}</span>
+                        <div class="label">Traffic Value</div>
+                    </div>
+                </div>
+                
+                <div class="opportunities-grid">
+                    <div class="opportunity-section">
+                        <div class="opportunity-header">
+                            <h3>🎯 Quick Wins</h3>
+                            <div class="count">{len(analysis.quick_wins)}</div>
+                        </div>
+                        <div class="opportunity-content">
+                            <p><strong>Keywords in positions 4-10 that can reach top 3</strong></p>
+                            {format_keywords_table(analysis.quick_wins)}
+                        </div>
+                    </div>
+                    
+                    <div class="opportunity-section">
+                        <div class="opportunity-header">
+                            <h3>📝 Content Gaps</h3>
+                            <div class="count">{len(analysis.content_gaps)}</div>
+                        </div>
+                        <div class="opportunity-content">
+                            <p><strong>Positions 11-20 needing content development</strong></p>
+                            {format_keywords_table(analysis.content_gaps)}
+                        </div>
+                    </div>
+                    
+                    <div class="opportunity-section">
+                        <div class="opportunity-header">
+                            <h3>💰 High Value Targets</h3>
+                            <div class="count">{len(analysis.high_value_targets)}</div>
+                        </div>
+                        <div class="opportunity-content">
+                            <p><strong>High CPC keywords with revenue potential</strong></p>
+                            {format_keywords_table(analysis.high_value_targets)}
+                        </div>
+                    </div>
+                    
+                    <div class="opportunity-section">
+                        <div class="opportunity-header">
+                            <h3>⚠️ Declining Keywords</h3>
+                            <div class="count">{len(analysis.declining_keywords)}</div>
+                        </div>
+                        <div class="opportunity-content">
+                            <p><strong>Keywords losing positions - need attention</strong></p>
+                            {format_keywords_table(analysis.declining_keywords)}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insights-section">
+                    <h3>🧠 Strategic Insights</h3>
+                    {format_insights_list(analysis.insights)}
+                </div>
+                
+                <div class="action-items-section">
+                    <h3>🚀 Priority Action Items</h3>
+                    {format_action_items(analysis.action_items)}
+                </div>
+                
+                <div class="download-section">
+                    <a href="/upload-form" class="back-btn">📊 Analyze Another Site</a>
+                    <button class="download-btn" onclick="downloadJSON()">💾 Download Full JSON Report</button>
+                    <button class="download-btn" onclick="downloadCSV()">📈 Download CSV Report</button>
+                </div>
+            </div>
+            
+            <script>
+                function downloadJSON() {{
+                    const data = {analysis.json()};
+                    const blob = new Blob([JSON.stringify(data, null, 2)], {{type: 'application/json'}});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '{analysis.site_domain}_seo_analysis.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }}
+                
+                function downloadCSV() {{
+                    // Generate CSV from analysis data
+                    const csvRows = ['Category,Keyword,Position,Volume,CPC,Opportunity'];
+                    
+                    // Add quick wins
+                    const quickWins = {[{"keyword": kw.keyword, "current_position": kw.current_position, "search_volume": kw.search_volume, "cpc": kw.cpc, "opportunity_score": kw.opportunity_score} for kw in analysis.quick_wins[:10]]};
+                    quickWins.forEach(kw => {{
+                        csvRows.push(`"Quick Wins","${{kw.keyword}}",${{kw.current_position}},${{kw.search_volume}},${{kw.cpc}},${{kw.opportunity_score}}`);
+                    }});
+                    
+                    // Add content gaps
+                    const contentGaps = {[{"keyword": kw.keyword, "current_position": kw.current_position, "search_volume": kw.search_volume, "cpc": kw.cpc, "opportunity_score": kw.opportunity_score} for kw in analysis.content_gaps[:10]]};
+                    contentGaps.forEach(kw => {{
+                        csvRows.push(`"Content Gaps","${{kw.keyword}}",${{kw.current_position}},${{kw.search_volume}},${{kw.cpc}},${{kw.opportunity_score}}`);
+                    }});
+                    
+                    // Add high value
+                    const highValue = {[{"keyword": kw.keyword, "current_position": kw.current_position, "search_volume": kw.search_volume, "cpc": kw.cpc, "opportunity_score": kw.opportunity_score} for kw in analysis.high_value_targets[:10]]};
+                    highValue.forEach(kw => {{
+                        csvRows.push(`"High Value","${{kw.keyword}}",${{kw.current_position}},${{kw.search_volume}},${{kw.cpc}},${{kw.opportunity_score}}`);
+                    }});
+                    
+                    const csvContent = csvRows.join('\\n');
+                    const blob = new Blob([csvContent], {{type: 'text/csv;charset=utf-8;'}});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '{analysis.site_domain}_seo_opportunities.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }}
+            </script>
+        </body>
+    </html>
+    """
+
+
 if __name__ == "__main__":
-    print("🏥 Starting Desert Spine & Sports Ranking Intelligence Engine...")
+    print("🏥 Starting Healthcare SEO Intelligence Engine...")
     print("📊 Optimized for SEMrush Organic Research exports...")
     uvicorn.run(app, host="0.0.0.0", port=8003)
