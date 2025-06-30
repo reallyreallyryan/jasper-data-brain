@@ -295,14 +295,25 @@ class HealthcareRankingIntelligence:
             print(f"📋 Columns: {list(df.columns)}")
             
             # Clean and prepare data
+            # Clean and prepare data more aggressively
             df = df.dropna(subset=['Keyword', 'Position', 'Search Volume'])
+
+            # Replace any non-numeric values with defaults
             df['Position'] = pd.to_numeric(df['Position'], errors='coerce')
             df['Search Volume'] = pd.to_numeric(df['Search Volume'], errors='coerce')
-            df['Keyword Difficulty'] = pd.to_numeric(df['Keyword Difficulty'], errors='coerce')
-            df['CPC'] = pd.to_numeric(df['CPC'], errors='coerce')
-            df['Traffic'] = pd.to_numeric(df['Traffic'], errors='coerce')
-            df['Traffic (%)'] = pd.to_numeric(df['Traffic (%)'], errors='coerce')
-            df['Traffic Cost'] = pd.to_numeric(df['Traffic Cost'], errors='coerce')
+            df['Keyword Difficulty'] = pd.to_numeric(df['Keyword Difficulty'], errors='coerce').fillna(0)
+            df['CPC'] = pd.to_numeric(df['CPC'], errors='coerce').fillna(0)
+            df['Traffic'] = pd.to_numeric(df['Traffic'], errors='coerce').fillna(0)
+            df['Traffic (%)'] = pd.to_numeric(df['Traffic (%)'], errors='coerce').fillna(0)
+            df['Traffic Cost'] = pd.to_numeric(df['Traffic Cost'], errors='coerce').fillna(0)
+
+            # Remove any rows where Position or Search Volume couldn't be converted
+            df = df.dropna(subset=['Position', 'Search Volume'])
+
+            # Convert to integers after cleaning
+            df['Position'] = df['Position'].astype(int)
+            df['Search Volume'] = df['Search Volume'].astype(int)
+            df['Traffic'] = df['Traffic'].astype(int)
             
             # Extract domain
             domain = self._extract_domain_from_url(df)
